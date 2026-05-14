@@ -16,7 +16,7 @@ public class DeviceController {
 
     @PostMapping("/{id}/on")
     @PreAuthorize("hasRole('LANDLORD')")
-    public ResponseEntity<Map<String, String>> turnDeviceOn(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> turnDeviceOn(@PathVariable("id") Long id) {
         boolean success = deviceControlService.turnOn(id);
         if (success) {
             return ResponseEntity.ok(Map.of("status", "success", "message", "Device turned ON"));
@@ -27,7 +27,7 @@ public class DeviceController {
 
     @PostMapping("/{id}/off")
     @PreAuthorize("hasRole('LANDLORD')")
-    public ResponseEntity<Map<String, String>> turnDeviceOff(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> turnDeviceOff(@PathVariable("id") Long id) {
         boolean success = deviceControlService.turnOff(id);
         if (success) {
             return ResponseEntity.ok(Map.of("status", "success", "message", "Device turned OFF"));

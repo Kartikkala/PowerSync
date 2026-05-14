@@ -23,4 +23,12 @@ public interface BillRepo extends JpaRepository<Bill, Long> {
     // Check if a bill already exists for this tenant + period (prevent duplicates)
     Optional<Bill> findByTenantIdAndBillingPeriodStartAndBillingPeriodEnd(
             Long tenantId, LocalDate start, LocalDate end);
+
+    // Check if an UNPAID bill already exists for this tenant + period (only skip unpaid duplicates)
+    boolean existsByTenantIdAndBillingPeriodStartAndBillingPeriodEndAndPaymentStatus(
+            Long tenantId, LocalDate start, LocalDate end, PaymentStatus paymentStatus);
+
+    // Find the most recent PAID bill for a tenant+room (for incremental billing)
+    Optional<Bill> findTopByTenantIdAndRoomIdAndPaymentStatusOrderByBillingPeriodEndDesc(
+            Long tenantId, Long roomId, PaymentStatus paymentStatus);
 }

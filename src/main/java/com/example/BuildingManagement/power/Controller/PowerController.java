@@ -69,7 +69,7 @@ public class PowerController {
      * Get the latest power reading for a specific room.
      */
     @GetMapping("/api/v1/power/room/{roomId}/latest")
-    public ResponseEntity<?> getLatestReading(@PathVariable Long roomId) {
+    public ResponseEntity<?> getLatestReading(@PathVariable("roomId") Long roomId) {
         PowerMetric metric = powerMetricService.getLatestReading(roomId);
         if (metric == null) {
             return ResponseEntity.ok(Map.of("message", "No readings found for room " + roomId));
@@ -84,7 +84,7 @@ public class PowerController {
      */
     @GetMapping("/api/v1/power/room/{roomId}/history")
     public ResponseEntity<List<PowerMetric>> getHistory(
-            @PathVariable Long roomId,
+            @PathVariable("roomId") Long roomId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
@@ -104,7 +104,7 @@ public class PowerController {
      * Returns: unitsConsumed, startReading, latestReading, unitRate, estimatedCost
      */
     @GetMapping("/api/v1/power/room/{roomId}/usage")
-    public ResponseEntity<Map<String, Object>> getCumulativeUsage(@PathVariable Long roomId) {
+    public ResponseEntity<Map<String, Object>> getCumulativeUsage(@PathVariable("roomId") Long roomId) {
         Map<String, Object> usage = powerMetricService.getCumulativeUsage(roomId);
         return ResponseEntity.ok(usage);
     }

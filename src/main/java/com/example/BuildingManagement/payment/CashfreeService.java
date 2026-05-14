@@ -50,9 +50,9 @@ public class CashfreeService {
         body.put("customer_details", customerDetails);
 
         Map<String, String> orderMeta = new HashMap<>();
-        orderMeta.put("return_url", "http://localhost:3000/payment-success?order_id={order_id}");
+        orderMeta.put("return_url", "http://localhost:5173/transactions?order_id={order_id}");
         // We'll also configure webhook separately in Cashfree dashboard or pass webhook_url here
-        // orderMeta.put("notify_url", "http://YOUR_SERVER_IP/api/v1/payment/webhook");
+        orderMeta.put("notify_url", "https://unified-tar-bow-medal.trycloudflare.com/api/v1/payment/webhook");
         body.put("order_meta", orderMeta);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);

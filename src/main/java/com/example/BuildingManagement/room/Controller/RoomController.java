@@ -22,7 +22,7 @@ public class RoomController {
 
     @PostMapping
     public ResponseEntity<Room> createRoom(
-            @PathVariable Long apartmentId,
+            @PathVariable("apartmentId") Long apartmentId,
             @Valid @RequestBody RoomRequest roomRequest,
             @AuthenticationPrincipal UserPrincipal principal) {
         return ResponseEntity.ok(roomService.addRoom(apartmentId, roomRequest, principal.getUser()));
@@ -30,23 +30,23 @@ public class RoomController {
 
     @GetMapping
     public ResponseEntity<List<Room>> getAllRooms(
-            @PathVariable Long apartmentId,
+            @PathVariable("apartmentId") Long apartmentId,
             @AuthenticationPrincipal UserPrincipal principal) {
         return ResponseEntity.ok(roomService.getRoomsByApartment(apartmentId, principal.getUser()));
     }
 
     @GetMapping("/{roomId}")
     public ResponseEntity<Room> getRoomById(
-            @PathVariable Long apartmentId,
-            @PathVariable Long roomId,
+            @PathVariable("apartmentId") Long apartmentId,
+            @PathVariable("roomId") Long roomId,
             @AuthenticationPrincipal UserPrincipal principal) {
         return ResponseEntity.ok(roomService.getRoomById(apartmentId, roomId, principal.getUser()));
     }
 
     @PutMapping("/{roomId}")
     public ResponseEntity<Room> updateRoom(
-            @PathVariable Long apartmentId,
-            @PathVariable Long roomId,
+            @PathVariable("apartmentId") Long apartmentId,
+            @PathVariable("roomId") Long roomId,
             @Valid @RequestBody RoomRequest roomRequest,
             @AuthenticationPrincipal UserPrincipal principal) {
         return ResponseEntity.ok(roomService.updateRoom(apartmentId, roomId, roomRequest, principal.getUser()));
@@ -54,8 +54,8 @@ public class RoomController {
 
     @DeleteMapping("/{roomId}")
     public ResponseEntity<String> deleteRoom(
-            @PathVariable Long apartmentId,
-            @PathVariable Long roomId,
+            @PathVariable("apartmentId") Long apartmentId,
+            @PathVariable("roomId") Long roomId,
             @AuthenticationPrincipal UserPrincipal principal) {
         roomService.deleteRoom(apartmentId, roomId, principal.getUser());
         return ResponseEntity.ok("Room deleted successfully within the context of Apartment " + apartmentId);

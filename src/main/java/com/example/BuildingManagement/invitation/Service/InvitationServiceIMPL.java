@@ -47,7 +47,7 @@ public class InvitationServiceIMPL implements InvitationService{
 
     @Override
     public void sendInvitation(String email, Long roomId, User landlord) {
-        Room room = roomRepo.findByRoomNumber(roomId).orElseThrow();
+        Room room = roomRepo.findById(roomId).orElseThrow();
         String code = UUID.randomUUID().toString();
         Invitation invitation = new Invitation();
         invitation.setEmail(email);
@@ -148,7 +148,7 @@ public class InvitationServiceIMPL implements InvitationService{
         message.setTo(toEmail);
         message.setSubject("Invitation to join PowerSync");
 
-        String registrationUrl = "http://localhost:3000/register?code=" + inviteCode;
+        String registrationUrl = "http://localhost:5173/register?code=" + inviteCode;
 
         message.setText("Welcome to PowerSync!\n\n" +
                 "Your landlord has invited you to join their property. " +

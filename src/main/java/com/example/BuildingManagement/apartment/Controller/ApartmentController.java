@@ -39,7 +39,7 @@ public class ApartmentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Apartment> updateApartment(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody ApartmentRequest request,
             @AuthenticationPrincipal UserPrincipal principal) {
         return ResponseEntity.ok(apartmentService.updateApartment(id, request, principal.getUser()));
@@ -47,7 +47,7 @@ public class ApartmentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteApartment(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @AuthenticationPrincipal UserPrincipal principal) {
         apartmentService.deleteApartment(id, principal.getUser());
         return ResponseEntity.ok("Apartment and all associated rooms deleted successfully");

@@ -272,8 +272,8 @@
 
     <script>
         let ws = null;
-        const WS_URL = "ws://localhost:8081/ws/telemetry";
-        const API_URL = "http://localhost:8081/esp";
+        const WS_URL = "ws://localhost:8080/ws/telemetry";
+        const API_URL = "http://localhost:8080/esp";
 
         function connectWS() {
             if (ws && ws.readyState === WebSocket.OPEN) {

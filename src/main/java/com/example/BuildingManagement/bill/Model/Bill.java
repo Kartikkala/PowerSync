@@ -51,6 +51,9 @@ public class Bill {
     @Column(name = "payment_link", length = 1000)
     private String paymentLink;
 
+    @Column(name = "last_energy_reading")
+    private BigDecimal lastEnergyReading;
+
     @Column(name = "due_date")
     private LocalDateTime dueDate;
 

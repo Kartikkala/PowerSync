@@ -72,11 +72,11 @@ public class BillService {
 
             IotDevice device = deviceOpt.get();
 
-            // Check if bill already exists for this period
-            Optional<Bill> existing = billRepo.findByTenantIdAndBillingPeriodStartAndBillingPeriodEnd(
-                    tenant.getId(), periodStart, periodEnd);
-            if (existing.isPresent()) {
-                System.out.println("  Bill already exists for Room " + room.getRoomNumber() +
+            // Check if an UNPAID bill already exists for this period (skip only unpaid duplicates)
+            boolean unpaidExists = billRepo.existsByTenantIdAndBillingPeriodStartAndBillingPeriodEndAndPaymentStatus(
+                    tenant.getId(), periodStart, periodEnd, PaymentStatus.UNPAID);
+            if (unpaidExists) {
+                System.out.println("  UNPAID bill already exists for Room " + room.getRoomNumber() +
                         ", Tenant: " + tenant.getFullname() + " — skipping");
                 continue;
             }
@@ -108,9 +108,23 @@ public class BillService {
                 continue;
             }
 
-            // Calculate units consumed (kWh) = last reading - first reading
-            BigDecimal startEnergy = firstReading.get().getUnitsConsumedTotal();
+            // Calculate units consumed (kWh) — use incremental billing if a previous PAID bill exists
             BigDecimal endEnergy = lastReading.get().getUnitsConsumedTotal();
+            BigDecimal startEnergy;
+
+            // Find the last PAID bill for this tenant+room to get the energy reading where we left off
+            Optional<Bill> lastPaidBill = billRepo.findTopByTenantIdAndRoomIdAndPaymentStatusOrderByBillingPeriodEndDesc(
+                    tenant.getId(), room.getId(), PaymentStatus.PAID);
+
+            if (lastPaidBill.isPresent() && lastPaidBill.get().getLastEnergyReading() != null) {
+                // Start from where the last paid bill ended
+                startEnergy = lastPaidBill.get().getLastEnergyReading();
+                System.out.println("  Incremental billing: starting from last paid bill reading = " + startEnergy);
+            } else {
+                // First bill ever — use the first reading of the period
+                startEnergy = firstReading.get().getUnitsConsumedTotal();
+            }
+
             BigDecimal unitsConsumed = endEnergy.subtract(startEnergy).abs();
 
             // Get unit rate from device
@@ -130,6 +144,7 @@ public class BillService {
             bill.setUnitsConsumed(unitsConsumed);
             bill.setUnitRate(unitRate);
             bill.setTotalAmount(totalAmount);
+            bill.setLastEnergyReading(endEnergy); // Track meter reading for incremental billing
             bill.setPaymentStatus(PaymentStatus.UNPAID);
             bill.setDueDate(LocalDateTime.now().plusDays(3)); // 3 day due limit
 

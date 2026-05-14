@@ -35,7 +35,7 @@ public class BillController {
      */
     @GetMapping("/room/{roomId}")
     @PreAuthorize("hasRole('LANDLORD')")
-    public ResponseEntity<List<Bill>> getBillsByRoom(@PathVariable Long roomId) {
+    public ResponseEntity<List<Bill>> getBillsByRoom(@PathVariable("roomId") Long roomId) {
         List<Bill> bills = billService.getBillsForRoom(roomId);
         return ResponseEntity.ok(bills);
     }
@@ -44,7 +44,7 @@ public class BillController {
      * Get a single bill by ID.
      */
     @GetMapping("/{billId}")
-    public ResponseEntity<Bill> getBillById(@PathVariable Long billId) {
+    public ResponseEntity<Bill> getBillById(@PathVariable("billId") Long billId) {
         Bill bill = billService.getBillById(billId);
         return ResponseEntity.ok(bill);
     }
@@ -68,10 +68,10 @@ public class BillController {
     @PostMapping("/generate")
     @PreAuthorize("hasRole('LANDLORD')")
     public ResponseEntity<Map<String, Object>> generateBills(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate month) {
+            @RequestParam(name = "month", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate month) {
 
         if (month == null) {
-            month = LocalDate.now().minusMonths(1);
+            month = LocalDate.now(); // Default to current month
         }
 
         List<Bill> generated = billService.generateMonthlyBills(month);
@@ -92,7 +92,7 @@ public class BillController {
     @PutMapping("/{billId}/unit-rate")
     @PreAuthorize("hasRole('LANDLORD')")
     public ResponseEntity<Map<String, Object>> updateBillUnitRate(
-            @PathVariable Long billId,
+            @PathVariable("billId") Long billId,
             @RequestBody Map<String, java.math.BigDecimal> payload) {
         
         java.math.BigDecimal unitRate = payload.get("unitRate");
