@@ -12,6 +12,22 @@ public class DeviceControlService {
     private final IotDeviceRepo iotDeviceRepo;
 
     /**
+     * Get a device by its ID.
+     */
+    public IotDevice getDeviceById(Long deviceId) {
+        return iotDeviceRepo.findById(deviceId)
+                .orElseThrow(() -> new RuntimeException("Device not found"));
+    }
+
+    /**
+     * Get a device by the room it is installed in.
+     */
+    public IotDevice getDeviceByRoomId(Long roomId) {
+        return iotDeviceRepo.findByRoomId(roomId)
+                .orElseThrow(() -> new RuntimeException("No device found for room: " + roomId));
+    }
+
+    /**
      * Send an HTTP GET request to the ESP32 server to turn ON the electricity.
      */
     public boolean turnOn(Long deviceId) {
@@ -65,6 +81,23 @@ public class DeviceControlService {
             System.err.println("❌ Failed to turn OFF device " + device.getDeviceSerial() + ": " + e.getMessage());
             return false;
         }
+    }
+
+    /**
+     * Updates the IP address of a specific IoT device.
+     */
+    public IotDevice updateIpAddress(Long deviceId, String ipAddress) {
+        IotDevice device = iotDeviceRepo.findById(deviceId)
+                .orElseThrow(() -> new RuntimeException("Device not found"));
+
+        if (ipAddress == null || ipAddress.isBlank()) {
+            throw new IllegalArgumentException("IP address cannot be empty");
+        }
+
+        device.setIpAddress(ipAddress.trim());
+        iotDeviceRepo.save(device);
+        System.out.println("✅ Device " + device.getDeviceSerial() + " IP updated to " + ipAddress);
+        return device;
     }
 
     /**
